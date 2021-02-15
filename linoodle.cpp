@@ -6,7 +6,7 @@ typedef __attribute__((ms_abi)) size_t(*tDecompressFunc)(uint8_t* srcBuf, size_t
 class OodleWrapper {
 public:
     OodleWrapper() :
-        m_oodleLib(WindowsLibrary::Load("oo2core_8_win64.dll"))
+        m_oodleLib(WindowsLibrary::Load("../oo2core_8_win64.dll"))
     {
         m_decompressFunc = reinterpret_cast<tDecompressFunc>(m_oodleLib.GetExport("OodleLZ_Decompress"));
     }
