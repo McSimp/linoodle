@@ -18,6 +18,7 @@ typedef WCHAR* PWCHAR, * LPWCH, * PWCH;
 typedef WCHAR* NWPSTR, * LPWSTR, * PWSTR;
 typedef const WCHAR* LPCWCH, * PCWCH;
 typedef char* NPSTR, * LPSTR, * PSTR;
+typedef const char* LPCSTR, * PCSTR;
 typedef const char* LPCCH, * PCCH;
 typedef BYTE* LPBYTE;
 typedef BOOL* LPBOOL;
@@ -308,6 +309,11 @@ int32_t WINAPI WideCharToMultiByte(UINT CodePage, DWORD dwFlags, LPCWCH lpWideCh
     }
 }
 
+void WINAPI OutputDebugStringA(LPCSTR lpOutputString)
+{
+    fputs(lpOutputString, stderr);
+}
+
 WindowsAPI::WindowsAPI()
 {
     // Fill in the API map
@@ -342,6 +348,7 @@ WindowsAPI::WindowsAPI()
     m_apiMap["KERNEL32.DLL"]["TlsFree"] = reinterpret_cast<void*>(TlsFree);
     m_apiMap["KERNEL32.DLL"]["DecodePointer"] = reinterpret_cast<void*>(EncodePointer);
     m_apiMap["KERNEL32.DLL"]["HeapSize"] = reinterpret_cast<void*>(HeapSize);
+    m_apiMap["KERNEL32.DLL"]["OutputDebugStringA"] = reinterpret_cast<void*>(OutputDebugStringA);
 
     // Set locale for wide string conversion functions
     setlocale(LC_ALL, "en_US.utf8");
