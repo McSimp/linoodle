@@ -66,6 +66,7 @@ void WindowsLibrary::SetupCall()
 {
     // Setup gs to point to a fake TIB structure
     memset(&s_tib, 0, sizeof(TIB));
+    s_tib.Self = &s_tib;
     syscall(__NR_arch_prctl, ARCH_SET_GS, (void*)&s_tib);
 }
 
@@ -151,9 +152,9 @@ WindowsLibrary WindowsLibrary::Load(const char* path)
     uint64_t delta = reinterpret_cast<uint64_t>(imageMapping.ptr()) - pe->peHeader.nt.OptionalHeader64.ImageBase;
     auto importIt = [](void* pDelta, const peparse::VA& impAddr, const std::string& modName, const std::string& symName) -> int {
         void* func = WindowsAPI::GetInstance().GetFunction(modName, symName);
+        uint64_t delta = *reinterpret_cast<uint64_t*>(pDelta);
+        void** pData = reinterpret_cast<void**>(impAddr + delta);
         if (func != nullptr) {
-            uint64_t delta = *reinterpret_cast<uint64_t*>(pDelta);
-            void** pData = reinterpret_cast<void**>(impAddr + delta);
             *pData = func;
         }
         return 0;
