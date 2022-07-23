@@ -314,6 +314,39 @@ void WINAPI OutputDebugStringA(LPCSTR lpOutputString)
     fputs(lpOutputString, stderr);
 }
 
+bool WINAPI DisableThreadLibraryCalls(HANDLE hLibModule)
+{
+    return true;
+}
+
+void WINAPI InitializeSListHead(void* listHead)
+{
+
+}
+
+typedef struct _onexit_table_t
+{
+    void* _first;
+    void* _last;
+    void* _end;
+} _onexit_table_t;
+
+int WINAPI _initialize_onexit_table(_onexit_table_t* table)
+{
+    memset(table, 0, sizeof(_onexit_table_t));
+    return 0;
+}
+
+int WINAPI _initterm_e(void* first, void* last)
+{
+    return 0;
+}
+
+void WINAPI _initterm(void *first, void *last)
+{
+
+}
+
 WindowsAPI::WindowsAPI()
 {
     // Fill in the API map
@@ -349,12 +382,18 @@ WindowsAPI::WindowsAPI()
     m_apiMap["KERNEL32.DLL"]["DecodePointer"] = reinterpret_cast<void*>(EncodePointer);
     m_apiMap["KERNEL32.DLL"]["HeapSize"] = reinterpret_cast<void*>(HeapSize);
     m_apiMap["KERNEL32.DLL"]["OutputDebugStringA"] = reinterpret_cast<void*>(OutputDebugStringA);
+    m_apiMap["KERNEL32.DLL"]["DisableThreadLibraryCalls"] = reinterpret_cast<void*>(DisableThreadLibraryCalls);
+    m_apiMap["KERNEL32.DLL"]["InitializeSListHead"] = reinterpret_cast<void *>(InitializeSListHead);
+    m_apiMap["API-MS-WIN-CRT-RUNTIME-L1-1-0.DLL"]["_initialize_onexit_table"] = reinterpret_cast<void *>(_initialize_onexit_table);
+    m_apiMap["API-MS-WIN-CRT-RUNTIME-L1-1-0.DLL"]["_initterm_e"] = reinterpret_cast<void *>(_initterm_e);
+    m_apiMap["API-MS-WIN-CRT-RUNTIME-L1-1-0.DLL"]["_initterm"] = reinterpret_cast<void *>(_initterm);
 
     // Set locale for wide string conversion functions
     setlocale(LC_ALL, "en_US.utf8");
 }
 
-WindowsAPI& WindowsAPI::GetInstance() {
+WindowsAPI& WindowsAPI::GetInstance()
+{
     static WindowsAPI instance;
     return instance;
 }
